@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const Animal = require("../models/animals.models");
+const auth = require("../auth-middelware");
 
+//get all animals
 router.get("/animals", async function (request, response, next) {
   try {
     let result = await Animal.find();
@@ -11,7 +13,7 @@ router.get("/animals", async function (request, response, next) {
   }
 });
 
-// get single animal by id
+//get single animal by id
 router.get("/animals/:id", async function (request, response, next) {
   try {
     let result = await Animal.findById(request.params.id);
@@ -21,10 +23,10 @@ router.get("/animals/:id", async function (request, response, next) {
   }
 });
 
-//add an animal by id ??
-router.post("/animals/:id", async function (request, response, next) {
+//add an animal
+router.post("/animals", async function (request, response, next) {
   try {
-    let animal = await Animal.create(request.body.id); //let animal = await new Animal(request.body)
+    let animal = await Animal.create(request.body); //let animal = await new Animal(request.body)
     return response.status(201).json(animal); //animal.save() *er det samme*
   } catch (error) {
     return next(error);
@@ -32,7 +34,7 @@ router.post("/animals/:id", async function (request, response, next) {
 });
 
 //update an animal by id
-router.patch("/animals/:id", async function (request, response, next) {
+router.patch("/animals/:id", auth, async function (request, response, next) {
   try {
     let updatedAnimal = await Animal.findByIdAndUpdate(
       request.params.id,
